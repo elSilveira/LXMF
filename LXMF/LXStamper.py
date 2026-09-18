@@ -136,7 +136,7 @@ def generate_stamp(message_id, stamp_cost, expand_rounds=WORKBLOCK_EXPAND_ROUNDS
         else:                  stamp, rounds = job_linux(stamp_cost, workblock, message_id)
     
     duration = time.time() - start_time
-    speed = rounds/duration
+    speed = rounds/duration if duration > 0 else 0
     if stamp != None: value = stamp_value(workblock, stamp)
 
     RNS.log(f"Stamp with value {value} generated in {RNS.prettytime(duration)}, {rounds} rounds, {int(speed)} rounds per second", RNS.LOG_DEBUG)
@@ -199,7 +199,8 @@ def job_simple(stamp_cost, workblock, message_id):
     while not sv(pstamp, stamp_cost, workblock) and not active_jobs[message_id]:
         pstamp = os.urandom(256//8); rounds += 1
         if rounds % 2500 == 0:
-            speed = rounds / (time.time()-st)
+            elapsed = time.time()-st
+            speed = rounds/elapsed if elapsed > 0 else 0
             RNS.log(f"Stamp generation running. {rounds} rounds completed so far, {int(speed)} rounds per second", RNS.LOG_DEBUG)
 
     if active_jobs[message_id] == True:
@@ -459,7 +460,7 @@ def job_android(stamp_cost, workblock, message_id):
 
             if stamp == None:
                 elapsed = time.time() - start_time
-                speed = total_rounds/elapsed
+                speed = total_rounds/elapsed if elapsed > 0 else 0
                 RNS.log(f"Stamp generation running. {total_rounds} rounds completed so far, {int(speed)} rounds per second", RNS.LOG_DEBUG)
         
         except Exception as e:
