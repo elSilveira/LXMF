@@ -507,7 +507,8 @@ class LXMPeer:
 
             rate_str = ""
             if self.current_sync_transfer_started != None:
-                self.sync_transfer_rate = (resource.get_transfer_size()*8)/(time.time()-self.current_sync_transfer_started)
+                transfer_time = time.time()-self.current_sync_transfer_started
+                self.sync_transfer_rate = (resource.get_transfer_size()*8)/transfer_time if transfer_time > 0 else 0
                 rate_str = f" at {RNS.prettyspeed(self.sync_transfer_rate)}"
 
             RNS.log(f"Syncing {len(self.currently_transferring_messages)} messages to peer {RNS.prettyhexrep(self.destination_hash)} completed{rate_str}", RNS.LOG_VERBOSE)
